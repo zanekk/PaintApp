@@ -1,13 +1,16 @@
 package kenazCode;
 
-/**
- * Hello world!
- *
- */
-public class App 
-{
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+
+public class App{
+
     public static void main( String[] args )
     {
-        System.out.println( "Hello World!" );
+        Display display = new Display();
+        display.setVisible(true);
     }
+
+
 }
