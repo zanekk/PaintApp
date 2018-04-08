@@ -2,12 +2,23 @@ package kenazCode;
 
 import java.awt.*;
 
-public class Pencil extends DrawingTool{
-    @Override
+public abstract class DrawingTool
+{
+    Color color ;
+    boolean isEnabled = false;
+
     public void draw(int firstX, int firstY, int secondX, int secondY, Graphics g) {
         if(isEnabled){
             g.setColor(color);
             g.drawLine(firstX, firstY, secondX, secondY);
         }
+    }
+
+    public void setColor(Color color) {
+     this.color = color;
+    }
+
+    public void setEnable(boolean enable){
+        this.isEnabled = enable;
     }
 }

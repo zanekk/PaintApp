@@ -6,19 +6,19 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 
-public class Display extends JPanel {
+public class Display extends JPanel{
 
-    JButton pencil, rectangle, circle, line, rubber;
+    JButton pencilButton, rectangleButton, circleButton, lineButton, rubberButton;
     JButton[] colorsButtons;
     int firstX, firstY, secondX, secondY;
-    Color butColor;
+    ArrayList <DrawingTool> drawingList = new ArrayList<DrawingTool>();
+    Color actualColor = Color.BLACK;
     JFrame frame;
     Paint paintingPanel;
     Box boxLayout;
 
     public Display() {
         colorsButtons = new JButton[18];
-        butColor = new Color(0, 0, 0);
         paintingPanel = new Paint();
         boxLayout = new Box(BoxLayout.X_AXIS);
 
@@ -26,88 +26,47 @@ public class Display extends JPanel {
         frame.setSize(1180, 800);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        boxLayout.add(pencil = new JButton("Pencil"));
-        boxLayout.add(rectangle = new JButton("Rectangle"));
-        boxLayout.add(circle = new JButton("Circle"));
-        boxLayout.add(line = new JButton("Line"));
-        boxLayout.add(rubber = new JButton("Rubber"));
+        buttonPlacing();
+        setButtonColors();
 
-        for (int i = 0; i < 18; i++) {
-            colorsButtons[i] = new JButton("" + (i + 1));
-            colorsButtons[i].setSize(40, 40);
-            boxLayout.add(colorsButtons[i]);
-           // colorsButtons[i].addActionListener(this);
-        }
-        setButtonColor();
-
+        Pencil pencil = new Pencil();
+        pencil.setColor(actualColor);
+        drawingList.add(pencil);
 
         paintingPanel.setBackground(Color.WHITE);
         frame.add(paintingPanel, BorderLayout.CENTER);
         frame.add(boxLayout, BorderLayout.NORTH);
+
+        pencilButton.addActionListener( e -> {
+            enable(drawingList.get(0));
+        });
+
+        paintingPanel.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                super.mouseDragged(e);
+                secondX = e.getX() - 10;
+                secondY = e.getY() - 30;
+                drawingList.forEach(drawingTool -> {
+                    drawingTool.draw(firstX, firstY, secondX, secondY, frame.getGraphics());
+                });
+
+                firstX = secondX;
+                firstY = secondY;
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent mouseEvent) {
+                super.mouseMoved(mouseEvent);
+                firstX = mouseEvent.getX() - 10;
+                firstY = mouseEvent.getY() - 30;
+            }
+        });
         frame.setVisible(true);
-
-
-        pencil.addActionListener(e -> {
-            frame.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mousePressed(MouseEvent e) {
-                    super.mousePressed(e);
-                    firstX = e.getX() - 10;
-                    firstY = e.getY() - 30;
-
-                }
-                @Override
-                public void mouseReleased(MouseEvent e) {
-                    super.mouseReleased(e);
-                    secondX = e.getX();
-                    secondY = e.getY();
-                }
-            });
-            frame.addMouseMotionListener(new MouseMotionAdapter() {
-                @Override
-                public void mouseDragged(MouseEvent e) {
-                    super.mouseDragged(e);
-                    secondX = e.getX() - 10;
-                    secondY = e.getY() - 30;
-                    Pencil newPen = new Pencil(firstX, firstY, secondX, secondY, butColor);
-                    paintingPanel.addPencil(newPen);
-
-                    firstX = secondX;
-                    firstY = secondY;
-                }
-            });
-        });
-
-        rubber.addActionListener(e -> {
-            frame.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mousePressed(MouseEvent e) {
-                    super.mousePressed(e);
-                    firstX = e.getX() - 10;
-                    firstY = e.getY() - 30;
-
-                }
-            });
-            frame.addMouseMotionListener(new MouseMotionAdapter() {
-                @Override
-                public void mouseDragged(MouseEvent e) {
-                    super.mouseDragged(e);
-                    secondX = e.getX() - 10;
-                    secondY = e.getY() - 30;
-                    Rubber newRub = new Rubber(firstX, firstY, secondX, secondY);
-                    paintingPanel.addRubber(newRub);
-
-                    firstX = secondX;
-                    firstY = secondY;
-                }
-            });
-        });
     }
 
 
-
-
-    public void setButtonColor(){
+    public void setButtonColors(){
         colorsButtons[0].setBackground(Color.BLACK);
         colorsButtons[1].setBackground(Color.WHITE);
         colorsButtons[2].setBackground(Color.GRAY);
@@ -127,4 +86,27 @@ public class Display extends JPanel {
         colorsButtons[16].setBackground(new Color(0, 153, 204));
         colorsButtons[17].setBackground(new Color(0, 0, 153));
     }
+
+    public void enable(DrawingTool tool){
+       drawingList.forEach( drawingTool -> {
+           if (drawingTool == tool) drawingTool.setEnable(true);
+           else drawingTool.setEnable(false);
+       } );
+    }
+
+
+    public void buttonPlacing(){
+        boxLayout.add(pencilButton = new JButton("Pencil"));
+        boxLayout.add(rectangleButton = new JButton("Rectangle"));
+        boxLayout.add(circleButton = new JButton("Circle"));
+        boxLayout.add(lineButton = new JButton("Line"));
+        boxLayout.add(rubberButton = new JButton("Rubber"));
+
+        for (int i = 0; i < 18; i++) {
+            colorsButtons[i] = new JButton("" + (i + 1));
+            colorsButtons[i].setSize(40, 40);
+            boxLayout.add(colorsButtons[i]);
+        }
+    }
+
 }
