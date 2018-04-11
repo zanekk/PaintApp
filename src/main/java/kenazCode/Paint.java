@@ -2,7 +2,6 @@ package kenazCode;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 
 public class Paint extends JPanel {
     Graphics2D graph;
